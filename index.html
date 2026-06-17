@@ -266,120 +266,179 @@ body::before{
 .scroll-label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--t4);writing-mode:vertical-rl}
 
 /* ══════════════════════════════════════════════════
-   ORBITAL BUBBLE CLUSTER
+   2-RING ORBIT SYSTEM
 ══════════════════════════════════════════════════ */
 #orbit-stage{
   position:relative;
   width:100%;
-  /* square aspect so JS geometry works */
   aspect-ratio:1/1;
-  max-width:520px;
+  max-width:500px;
   justify-self:center;
   opacity:0;
   animation:fade-in 1s .5s var(--expo) forwards;
 }
 
-/* Individual bubble */
+/* Decorative track rings */
+.orbit-ring{
+  position:absolute;
+  border-radius:50%;
+  border:1px solid var(--line-01);
+  pointer-events:none;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  transition:border-color .4s;
+}
+/* slow counter-rotation on outer ring */
+.orbit-ring.outer{animation:ring-spin 60s linear infinite}
+.orbit-ring.inner{animation:ring-spin 40s linear infinite reverse}
+@keyframes ring-spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+/* Center dot */
+#orbit-center{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:10px;height:10px;border-radius:50%;
+  background:var(--cyan);
+  box-shadow:0 0 0 6px var(--cyan-dim),0 0 20px rgba(0,210,255,.4);
+  animation:pip-live 2.5s ease-in-out infinite;
+  z-index:2;
+}
+
+/* ── Circle node ─────────────────────────────── */
 .orb{
   position:absolute;
-  display:flex;align-items:center;gap:7px;
-  padding:9px 15px;
-  border-radius:99px;
+  transform:translate(-50%,-50%) scale(1);
+
+  /* idle: circle big enough to hold icon + short label */
+  width:76px;height:76px;
+  border-radius:50%;
+
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:3px;
+  padding:6px 4px;
+
   background:var(--bub-bg);
   border:1px solid var(--bub-border);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+
   cursor:pointer;
-  white-space:nowrap;
   text-decoration:none;
   color:var(--bub-text);
-  font-family:'Space Grotesk',sans-serif;
-  font-size:12px;font-weight:500;
-  letter-spacing:-.01em;
-  /* transform-origin is center of the pill */
-  transform:translate(-50%,-50%) scale(1);
+
   transition:
-    transform    .38s var(--spring),
-    background   .28s,
-    border-color .28s,
-    color        .28s,
-    opacity      .28s,
-    box-shadow   .28s;
-  /* subtle float animation, staggered per bubble in JS */
+    transform     .42s var(--spring),
+    width         .42s var(--expo),
+    height        .42s var(--expo),
+    border-radius .42s var(--expo),
+    padding       .3s  var(--expo),
+    background    .3s,
+    border-color  .3s,
+    color         .3s,
+    opacity       .3s,
+    box-shadow    .3s;
+
   will-change:transform;
+  overflow:hidden;
+  z-index:1;
 }
 
-/* emoji inside */
+/* icon */
 .orb-icon{
-  font-size:14px;line-height:1;flex-shrink:0;
-  transition:transform .3s var(--spring);
+  font-size:20px;line-height:1;flex-shrink:0;
+  transition:transform .35s var(--spring), font-size .35s var(--expo);
 }
 
-/* name text */
+/* short label — always visible, 2 words max, tiny */
+.orb-short{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:8.5px;
+  font-weight:600;
+  line-height:1.25;
+  letter-spacing:.01em;
+  text-align:center;
+  color:var(--t2);
+  /* allow 2 lines for 2-word wrap */
+  max-width:64px;
+  word-break:break-word;
+  hyphens:none;
+  white-space:normal;
+  transition:opacity .25s, color .25s, font-size .3s var(--expo);
+}
+
+/* full name — hidden idle, shown on hover */
 .orb-name{
-  font-size:11.5px;line-height:1.2;
-  transition:font-size .3s var(--expo);
-  max-width:130px;
-  overflow:hidden;text-overflow:ellipsis;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:0px;
+  font-weight:600;
+  line-height:1.25;
+  letter-spacing:-.01em;
+  text-align:center;
+  max-width:112px;
+  color:var(--t1);
+  opacity:0;
+  white-space:normal;
+  word-break:break-word;
+  transition:font-size .35s var(--expo), opacity .25s .06s;
 }
 
-/* tag pill inside bubble */
+/* tag — hidden idle */
 .orb-tag{
-  font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
-  padding:2px 6px;border-radius:4px;border:1px solid;flex-shrink:0;
-  opacity:0;transform:scale(.8);
-  transition:opacity .25s,transform .25s var(--spring);
+  font-size:0px;
+  font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:0;border-radius:4px;border:1px solid transparent;
+  opacity:0;
+  transition:font-size .3s var(--expo), opacity .2s, padding .3s var(--expo);
 }
 .orb-tag.tag-tool    {color:var(--cyan);   border-color:rgba(0,210,255,.25);  background:var(--cyan-dim)}
 .orb-tag.tag-website {color:var(--gold);   border-color:rgba(245,166,35,.25); background:var(--gold-dim)}
 .orb-tag.tag-academy {color:var(--violet); border-color:rgba(155,109,255,.25);background:var(--violet-dim)}
 .orb-tag.tag-system  {color:var(--emerald);border-color:rgba(52,211,153,.25); background:var(--emerald-dim)}
 
-/* HOVER: this bubble grows */
-.orb:hover{
-  transform:translate(-50%,-50%) scale(1.32) !important;
-  color:var(--t1);
-  border-color:var(--line-h);
-  box-shadow:
-    0 0 0 1px rgba(0,210,255,.15),
-    0 12px 40px rgba(0,0,0,.45),
-    0 0 60px rgba(0,210,255,.06);
-  z-index:10;
-}
-[data-theme="light"] .orb:hover{
-  background:rgba(255,255,255,.95);
-  box-shadow:0 8px 32px rgba(0,0,0,.12),0 0 0 1px rgba(0,150,200,.2);
-}
-.orb:hover .orb-icon{transform:scale(1.15)}
-.orb:hover .orb-name{font-size:13px}
-.orb:hover .orb-tag{opacity:1;transform:scale(1)}
-
-/* SIBLING DIMMING: applied by JS on #orbit-stage hover */
-#orbit-stage.has-hover .orb:not(:hover){
-  transform:translate(-50%,-50%) scale(.82) !important;
-  opacity:.35;
-}
-
-/* live dot on bubble */
+/* live pip */
 .orb-dot{
-  width:5px;height:5px;border-radius:50%;flex-shrink:0;
-  background:var(--t4);
+  position:absolute;top:7px;right:7px;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--t4);transition:background .3s,box-shadow .3s;
 }
-.orb-dot.live {background:var(--cyan);box-shadow:0 0 5px var(--cyan);animation:pip-live 3s ease-in-out infinite}
-.orb-dot.warm {background:var(--gold);box-shadow:0 0 5px var(--gold)}
+.orb-dot.live{background:var(--cyan);box-shadow:0 0 5px var(--cyan);animation:pip-live 3s ease-in-out infinite}
+.orb-dot.warm{background:var(--gold);box-shadow:0 0 5px var(--gold)}
+
 @keyframes pip-live{
   0%,100%{box-shadow:0 0 5px var(--cyan)}
-  50%    {box-shadow:0 0 12px var(--cyan)}
+  50%    {box-shadow:0 0 14px var(--cyan)}
 }
 
-/* floating ring — decorative */
-.orbit-ring{
-  position:absolute;inset:50% 50%;
-  transform:translate(-50%,-50%);
-  border-radius:50%;
-  border:1px solid var(--line-01);
-  pointer-events:none;
-  transition:border-color .4s;
+/* ── HOVER: expand to pill card ──────────────── */
+.orb:hover{
+  width:138px !important;
+  height:138px !important;
+  border-radius:22px !important;
+  padding:10px 8px !important;
+  transform:translate(-50%,-50%) scale(1) !important;
+  background:var(--glass-02) !important;
+  border-color:rgba(0,210,255,.42) !important;
+  color:var(--t1);
+  box-shadow:
+    0 0 0 1px rgba(0,210,255,.18),
+    0 18px 52px rgba(0,0,0,.52),
+    0 0 64px rgba(0,210,255,.07);
+  z-index:20;
+}
+[data-theme="light"] .orb:hover{
+  background:rgba(255,255,255,.96) !important;
+  box-shadow:0 10px 32px rgba(0,0,0,.14),0 0 0 1px rgba(0,150,200,.28) !important;
+}
+.orb:hover .orb-icon  { font-size:26px; transform:translateY(-2px); }
+.orb:hover .orb-short { font-size:0px; opacity:0; }   /* hide short, show full */
+.orb:hover .orb-name  { font-size:11px; opacity:1; }
+.orb:hover .orb-tag   { font-size:9px; opacity:1; padding:2px 7px; }
+
+/* ── SIBLING DIMMING ─────────────────────────── */
+#orbit-stage.has-hover .orb:not(:hover){
+  transform:translate(-50%,-50%) scale(.78) !important;
+  opacity:.25;
 }
 
 /* ══════════════════════════════════════════════════
@@ -625,11 +684,11 @@ footer{
     </div>
   </div>
 
-  <!-- Right: orbital bubble cluster (populated by JS) -->
+  <!-- Right: 2-ring orbit system (populated by JS) -->
   <div id="orbit-stage" aria-label="App destinations" role="list">
-    <!-- decorative rings, sized by JS -->
-    <div class="orbit-ring" id="ring-outer"></div>
-    <div class="orbit-ring" id="ring-inner"></div>
+    <div class="orbit-ring outer" id="ring-outer"></div>
+    <div class="orbit-ring inner" id="ring-inner"></div>
+    <div id="orbit-center" aria-hidden="true"></div>
   </div>
 
   <div class="scroll-indicator" aria-hidden="true">
@@ -796,126 +855,128 @@ footer{
 })();
 
 /* ══════════════════════════════════════════════
-   ORBITAL BUBBLE CLUSTER
+   2-RING ORBIT SYSTEM
+   Inner ring: 6 nodes   (indices 0–5)
+   Outer ring: 8 nodes   (indices 6–13)
 ══════════════════════════════════════════════ */
 ;(function(){
   const APPS = [
-    {name:'Tax Content Generator',      icon:'🧾', tag:'tool',    pip:'live', url:'https://ahmadmadicken-lgtm.github.io/Tax-Content-Generator/'},
-    {name:'Tipsolutip Generator',        icon:'💡', tag:'tool',    pip:'warm', url:'https://ahmadmadicken-lgtm.github.io/tipsolutip/'},
-    {name:'Genset Website',              icon:'⚡', tag:'website', pip:'live', url:'https://cekgensetgratis.online/'},
-    {name:'Tax Consultant',              icon:'📋', tag:'website', pip:'',     url:'https://konsultasipajakgratis.com/'},
-    {name:'Google Ads Academy',          icon:'🎯', tag:'academy', pip:'warm', url:'https://ahmadmadicken-lgtm.github.io/Google-Ads-Academy/'},
-    {name:'Math Fanie',                  icon:'➗', tag:'website', pip:'live', url:'https://ahmadmadicken-lgtm.github.io/Math_Panie/'},
-    {name:'Math Atta',                   icon:'🔢', tag:'website', pip:'live', url:'https://ahmadmadicken-lgtm.github.io/Belajar-MTK-Atta/'},
-    {name:'Tax Academy',                 icon:'🏛️', tag:'academy', pip:'warm', url:'https://ahmadmadicken-lgtm.github.io/Tax-Repository/'},
-    {name:'Genset Academy',              icon:'🔋', tag:'academy', pip:'',     url:'https://gensetmasterclass.online/'},
-    {name:'Facility ID Generator',       icon:'🏷️', tag:'tool',    pip:'live', url:'https://ahmadmadicken-lgtm.github.io/Industrial-Content-Generator/'},
-    {name:'APAR Website',                icon:'🧯', tag:'website', pip:'',     url:'https://firesafeindonesia.online/'},
-    {name:'CRM Leads',                   icon:'📡', tag:'system',  pip:'warm', url:'https://business-crm-all.netlify.app/'},
-    {name:'Financial Bubu',              icon:'💰', tag:'system',  pip:'live', url:'https://financial-os-ade.netlify.app/'},
-    {name:'Laporan Keuangan',            icon:'📊', tag:'system',  pip:'',     url:'https://ahmadmadicken-lgtm.github.io/LapKeu/'},
+    // ── Inner ring (6) ──
+    {name:'Tax Content Generator',    icon:'🧾', tag:'tool',    pip:'live', url:'https://ahmadmadicken-lgtm.github.io/Tax-Content-Generator/'},
+    {name:'Tipsolutip Generator',     icon:'💡', tag:'tool',    pip:'warm', url:'https://ahmadmadicken-lgtm.github.io/tipsolutip/'},
+    {name:'Genset Website',           icon:'⚡', tag:'website', pip:'live', url:'https://cekgensetgratis.online/'},
+    {name:'Tax Consultant',           icon:'📋', tag:'website', pip:'',     url:'https://konsultasipajakgratis.com/'},
+    {name:'Google Ads Academy',       icon:'🎯', tag:'academy', pip:'warm', url:'https://ahmadmadicken-lgtm.github.io/Google-Ads-Academy/'},
+    {name:'Math Fanie',               icon:'➗', tag:'website', pip:'live', url:'https://ahmadmadicken-lgtm.github.io/Math_Panie/'},
+    // ── Outer ring (8) ──
+    {name:'Math Atta',                icon:'🔢', tag:'website', pip:'live', url:'https://ahmadmadicken-lgtm.github.io/Belajar-MTK-Atta/'},
+    {name:'Tax Academy',              icon:'🏛️', tag:'academy', pip:'warm', url:'https://ahmadmadicken-lgtm.github.io/Tax-Repository/'},
+    {name:'Genset Academy',           icon:'🔋', tag:'academy', pip:'',     url:'https://gensetmasterclass.online/'},
+    {name:'Facility ID Generator',    icon:'🏷️', tag:'tool',    pip:'live', url:'https://ahmadmadicken-lgtm.github.io/Industrial-Content-Generator/'},
+    {name:'APAR Website',             icon:'🧯', tag:'website', pip:'',     url:'https://firesafeindonesia.online/'},
+    {name:'CRM Leads',                icon:'📡', tag:'system',  pip:'warm', url:'https://business-crm-all.netlify.app/'},
+    {name:'Financial Bubu',           icon:'💰', tag:'system',  pip:'live', url:'https://financial-os-ade.netlify.app/'},
+    {name:'Laporan Keuangan',         icon:'📊', tag:'system',  pip:'',     url:'https://ahmadmadicken-lgtm.github.io/LapKeu/'},
   ];
 
-  const stage = document.getElementById('orbit-stage');
+  const INNER_COUNT = 6;
+  const OUTER_COUNT = 8;
+  // Radii as fraction of stage size (0–1), measured from center
+  const R_INNER = 0.28;
+  const R_OUTER = 0.44;
+  // Ring offset angles so nodes don't stack vertically
+  const OFFSET_INNER = -Math.PI / 2;          // start top
+  const OFFSET_OUTER = -Math.PI / 2 + Math.PI / OUTER_COUNT; // stagger
 
-  /* ── Spiral layout ────────────────────────────
-     A loose golden-angle spiral so bubbles feel
-     organic, not grid-aligned. We map to [0..1]
-     coordinates, later scaled to stage px size.
-  ──────────────────────────────────────────────*/
-  function spiralPositions(n){
-    const GA = Math.PI*(3-Math.sqrt(5)); // golden angle ≈ 137.5°
-    return Array.from({length:n},(_, i)=>{
-      // r grows from 0.12 (center cluster) to 0.47 (near edge)
-      const t  = i/(n-1);
-      const r  = 0.13 + t*0.34;
-      const θ  = i*GA;
-      // slight random jitter so no two rings look identical
-      const jr = (Math.random()-.5)*0.045;
-      const jθ = (Math.random()-.5)*0.18;
-      return {
-        rx: 0.5 + (r+jr)*Math.cos(θ+jθ),
-        ry: 0.5 + (r+jr)*Math.sin(θ+jθ),
-      };
-    });
-  }
+  const stage  = document.getElementById('orbit-stage');
+  const rOuter = document.getElementById('ring-outer');
+  const rInner = document.getElementById('ring-inner');
 
-  // Build once with seeded jitter (deterministic on first call)
-  // We call with fixed Math.random by not re-seeding — positions
-  // are computed once, stored, reused on resize.
-  const POS = spiralPositions(APPS.length);
-
-  /* ── Build DOM ───────────────────────────────*/
-  const elems = APPS.map((app, i)=>{
+  /* ── Build node DOM ──────────────────────────*/
+  const nodes = APPS.map((app, i) => {
     const a = document.createElement('a');
     a.className = 'orb';
-    a.href   = app.url;
-    a.target = '_blank';
-    a.rel    = 'noopener noreferrer';
-    a.setAttribute('role','listitem');
+    a.href      = app.url;
+    a.target    = '_blank';
+    a.rel       = 'noopener noreferrer';
+    a.setAttribute('role', 'listitem');
     a.setAttribute('aria-label', app.name);
 
-    // live dot
+    // pip
     const dot = document.createElement('span');
-    dot.className = 'orb-dot' + (app.pip ? ' '+app.pip : '');
+    dot.className = 'orb-dot' + (app.pip ? ' ' + app.pip : '');
     a.appendChild(dot);
 
     // icon
     const ic = document.createElement('span');
-    ic.className = 'orb-icon'; ic.textContent = app.icon;
+    ic.className   = 'orb-icon';
+    ic.textContent = app.icon;
     a.appendChild(ic);
 
-    // name
+    // short label: first 2 words, always visible
+    const sh = document.createElement('span');
+    sh.className   = 'orb-short';
+    sh.textContent = app.name.split(' ').slice(0,2).join(' ');
+    a.appendChild(sh);
+
+    // full name — revealed on hover
     const nm = document.createElement('span');
-    nm.className = 'orb-name'; nm.textContent = app.name;
+    nm.className   = 'orb-name';
+    nm.textContent = app.name;
     a.appendChild(nm);
 
     // tag
     const tg = document.createElement('span');
-    tg.className = `orb-tag tag-${app.tag}`;
-    tg.textContent = app.tag.charAt(0).toUpperCase()+app.tag.slice(1);
+    tg.className   = `orb-tag tag-${app.tag}`;
+    tg.textContent = app.tag[0].toUpperCase() + app.tag.slice(1);
     a.appendChild(tg);
 
-    // float animation (gentle)
-    const dur  = 6 + Math.random()*4;
-    const del  = Math.random()*4;
-    const dist = 4 + Math.random()*5;
-    a.style.animation = `orb-float-${i} ${dur}s ${del}s ease-in-out infinite`;
-
-    // inject keyframe (unique per bubble)
-    const kf = document.createElement('style');
-    kf.textContent = `@keyframes orb-float-${i}{0%,100%{margin-top:0}50%{margin-top:${dist}px}}`;
+    // gentle float keyframe unique per node
+    const dur  = 5 + Math.random() * 4;
+    const del  = Math.random() * 3;
+    const dist = 3 + Math.random() * 5;
+    const kf   = document.createElement('style');
+    kf.textContent = `@keyframes of${i}{0%,100%{margin-top:0}50%{margin-top:${dist}px}}`;
     document.head.appendChild(kf);
+    a.style.animation = `of${i} ${dur}s ${del}s ease-in-out infinite`;
 
     stage.appendChild(a);
-    return {el:a, pos:POS[i]};
+
+    const ring  = i < INNER_COUNT ? 'inner' : 'outer';
+    const idx   = i < INNER_COUNT ? i : i - INNER_COUNT;
+    const count = i < INNER_COUNT ? INNER_COUNT : OUTER_COUNT;
+    const r     = i < INNER_COUNT ? R_INNER : R_OUTER;
+    const off   = i < INNER_COUNT ? OFFSET_INNER : OFFSET_OUTER;
+    const angle = off + (2 * Math.PI * idx) / count;
+
+    return { el: a, r, angle };
   });
 
-  /* ── Position bubbles ─────────────────────── */
-  function layout(){
+  /* ── Position nodes & rings ──────────────────*/
+  function layout() {
     const sz = stage.offsetWidth;
-    elems.forEach(({el,pos})=>{
-      el.style.left = (pos.rx * sz) + 'px';
-      el.style.top  = (pos.ry * sz) + 'px';
+    const cx = sz / 2, cy = sz / 2;
+
+    nodes.forEach(({ el, r, angle }) => {
+      const px = cx + r * sz * Math.cos(angle);
+      const py = cy + r * sz * Math.sin(angle);
+      el.style.left = px + 'px';
+      el.style.top  = py + 'px';
     });
 
-    // resize decorative rings
-    const outer = document.getElementById('ring-outer');
-    const inner = document.getElementById('ring-inner');
-    const ro = sz*0.84, ri = sz*0.52;
-    [outer,inner].forEach((el,i)=>{
-      const s = i===0?ro:ri;
-      el.style.width  = s+'px';
-      el.style.height = s+'px';
-    });
+    // Decorative track rings (diameter = 2 * r * sz)
+    const dOuter = R_OUTER * 2 * sz;
+    const dInner = R_INNER * 2 * sz;
+    rOuter.style.cssText = `width:${dOuter}px;height:${dOuter}px`;
+    rInner.style.cssText = `width:${dInner}px;height:${dInner}px`;
   }
 
   layout();
-  window.addEventListener('resize', layout, {passive:true});
+  window.addEventListener('resize', layout, { passive: true });
 
-  /* ── Hover: dim siblings ──────────────────── */
-  stage.addEventListener('mouseenter', ()=> stage.classList.add('has-hover'),    {passive:true});
-  stage.addEventListener('mouseleave', ()=> stage.classList.remove('has-hover'), {passive:true});
+  /* ── Hover sibling dimming ───────────────────*/
+  stage.addEventListener('mouseenter', () => stage.classList.add('has-hover'),    { passive: true });
+  stage.addEventListener('mouseleave', () => stage.classList.remove('has-hover'), { passive: true });
 })();
 
 /* ══════════════════════════════════════════════
