@@ -1084,22 +1084,25 @@ footer{
    NEURAL MESH CANVAS
 ══════════════════════════════════════════════ */
 ;(function(){
-  const cv=document.getElementById('neural-canvas'),ctx=cv.getContext('2d');
-  const N=90,REACH=150,PULL=130;
-  let W,H,nodes,mx=-9999,my=-9999;
-  const PALS=[[0,210,255],[155,109,255],[0,210,255]];
-  function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight}
-  function spawn(){nodes=Array.from({length:N},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22,r:Math.random()*1.4+.4,pal:PALS[Math.floor(Math.random()*PALS.length)]}))}
-  function tick(){
-    ctx.clearRect(0,0,W,H);
-    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<REACH){const a=(1-d/REACH)*.22,[r,g,b]=nodes[i].pal;ctx.strokeStyle=`rgba(${r},${g},${b},${a})`;ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke()}}
+  try{
+    const cv=document.getElementById('neural-canvas'),ctx=cv.getContext('2d');
+    if(!ctx) return;
+    const N=90,REACH=150,PULL=130;
+    let W,H,nodes,mx=-9999,my=-9999;
+    const PALS=[[0,210,255],[155,109,255],[0,210,255]];
+    function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+    function spawn(){nodes=Array.from({length:N},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22,r:Math.random()*1.4+.4,pal:PALS[Math.floor(Math.random()*PALS.length)]}))}
+    function tick(){
+      ctx.clearRect(0,0,W,H);
+      for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<REACH){const a=(1-d/REACH)*.22,[r,g,b]=nodes[i].pal;ctx.strokeStyle=`rgba(${r},${g},${b},${a})`;ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke()}}
     nodes.forEach(n=>{const dx=mx-n.x,dy=my-n.y,d=Math.sqrt(dx*dx+dy*dy);if(d<PULL&&d>0){const f=((PULL-d)/PULL)*.0012;n.vx+=dx*f;n.vy+=dy*f}n.vx*=.998;n.vy*=.998;n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;const[r,g,b]=n.pal;ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=`rgba(${r},${g},${b},.6)`;ctx.fill()});
     requestAnimationFrame(tick);
   }
   resize();spawn();tick();
-  addEventListener('resize',()=>{resize();spawn()},{passive:true});
-  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY},{passive:true});
-  addEventListener('touchmove',e=>{mx=e.touches[0].clientX;my=e.touches[0].clientY},{passive:true});
+    addEventListener('resize',()=>{resize();spawn()},{passive:true});
+    addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY},{passive:true});
+    addEventListener('touchmove',e=>{mx=e.touches[0].clientX;my=e.touches[0].clientY},{passive:true});
+  }catch(err){ console.warn('Neural canvas skipped:', err); }
 })();
 
 /* ══════════════════════════════════════════════
@@ -1233,59 +1236,99 @@ footer{
    TOPBAR ELEVATION
 ══════════════════════════════════════════════ */
 ;(function(){
-  const tb=document.getElementById('topbar');
-  const fn=()=>tb.classList.toggle('elevated',scrollY>40);
-  addEventListener('scroll',fn,{passive:true});fn();
+  try{
+    const tb=document.getElementById('topbar');
+    const fn=()=>tb.classList.toggle('elevated',scrollY>40);
+    addEventListener('scroll',fn,{passive:true});fn();
+  }catch(err){ console.warn('Topbar elevation skipped:', err); }
 })();
 
 /* ══════════════════════════════════════════════
    CARD STAGGER REVEAL
 ══════════════════════════════════════════════ */
 ;(function(){
-  const cards=document.querySelectorAll('.app-card');
-  const io=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
-      if(!e.isIntersecting)return;
-      const i=Array.from(cards).indexOf(e.target);
-      setTimeout(()=>e.target.classList.add('in'),Math.min(i*55,480));
-      io.unobserve(e.target);
-    });
-  },{threshold:.08,rootMargin:'0px 0px -30px 0px'});
-  cards.forEach(c=>io.observe(c));
+  try{
+    const cards=document.querySelectorAll('.app-card');
+    if(typeof IntersectionObserver==='undefined'){
+      cards.forEach(c=>c.classList.add('in'));
+      return;
+    }
+    const io=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(!e.isIntersecting)return;
+        const i=Array.from(cards).indexOf(e.target);
+        setTimeout(()=>e.target.classList.add('in'),Math.min(i*55,480));
+        io.unobserve(e.target);
+      });
+    },{threshold:.08,rootMargin:'0px 0px -30px 0px'});
+    cards.forEach(c=>io.observe(c));
+  }catch(err){
+    console.warn('Stagger reveal skipped:', err);
+    document.querySelectorAll('.app-card').forEach(c=>c.classList.add('in'));
+  }
 })();
 
 /* ══════════════════════════════════════════════
-   LIVE SEARCH
+   LIVE SEARCH  (case-insensitive)
 ══════════════════════════════════════════════ */
 ;(function(){
-  const CARDS=Array.from(document.querySelectorAll('.app-card'));
-  const noRes=document.getElementById('no-results');
-  const gridCnt=document.getElementById('grid-count');
-  const tbNum=document.getElementById('tb-badge-num');
-  const gridIn=document.getElementById('grid-search');
-  const tbIn=document.getElementById('tb-search');
-  function filter(q){
-    const term=q.trim().toLowerCase();let shown=0;
-    CARDS.forEach(c=>{const hit=!term||c.dataset.name.toLowerCase().includes(term)||c.dataset.tag.toLowerCase().includes(term);c.classList.toggle('dimmed',!hit);if(hit)shown++});
-    const lbl=term?`${shown}`:`${CARDS.length}`;
-    gridCnt.textContent=lbl;tbNum.textContent=lbl;
-    noRes.classList.toggle('visible',shown===0);
-  }
-  function sync(e){const v=e.target.value;gridIn.value=v;tbIn.value=v;filter(v)}
-  gridIn.addEventListener('input',sync);tbIn.addEventListener('input',sync);
-  tbIn.addEventListener('focus',()=>{if(scrollY<300)document.getElementById('grid-section').scrollIntoView({behavior:'smooth',block:'start'})});
-  document.addEventListener('keydown',e=>{if(e.key==='/'&&document.activeElement.tagName!=='INPUT'){e.preventDefault();gridIn.focus();document.getElementById('grid-section').scrollIntoView({behavior:'smooth',block:'start'})}});
+  try{
+    const CARDS=Array.from(document.querySelectorAll('.app-card'));
+    const noRes=document.getElementById('no-results');
+    const gridCnt=document.getElementById('grid-count');
+    const tbNum=document.getElementById('tb-badge-num');
+    const gridIn=document.getElementById('grid-search');
+    const tbIn=document.getElementById('tb-search');
+    function filter(q){
+      const term=q.trim().toLowerCase();let shown=0;
+      CARDS.forEach(c=>{
+        const name=(c.dataset.name||'').toLowerCase();
+        const tag =(c.dataset.tag ||'').toLowerCase();
+        const hit=!term||name.includes(term)||tag.includes(term);
+        c.classList.toggle('dimmed',!hit);
+        if(hit)shown++;
+      });
+      const lbl=term?`${shown}`:`${CARDS.length}`;
+      if(gridCnt)gridCnt.textContent=lbl;
+      if(tbNum)tbNum.textContent=lbl;
+      if(noRes)noRes.classList.toggle('visible',shown===0);
+    }
+    function sync(e){
+      const v=e.target.value;
+      if(gridIn)gridIn.value=v;
+      if(tbIn)tbIn.value=v;
+      filter(v);
+    }
+    if(gridIn)gridIn.addEventListener('input',sync);
+    if(tbIn)tbIn.addEventListener('input',sync);
+    if(tbIn)tbIn.addEventListener('focus',()=>{
+      if(scrollY<300){
+        const gs=document.getElementById('grid-section');
+        if(gs)gs.scrollIntoView({behavior:'smooth',block:'start'});
+      }
+    });
+    document.addEventListener('keydown',e=>{
+      if(e.key==='/'&&document.activeElement.tagName!=='INPUT'){
+        e.preventDefault();
+        if(gridIn)gridIn.focus();
+        const gs=document.getElementById('grid-section');
+        if(gs)gs.scrollIntoView({behavior:'smooth',block:'start'});
+      }
+    });
+  }catch(err){ console.warn('Search skipped:', err); }
 })();
 
 /* ══════════════════════════════════════════════
    THEME TOGGLE
 ══════════════════════════════════════════════ */
 ;(function(){
-  const html=document.documentElement,btn=document.getElementById('theme-toggle');
-  const KEY='madicken-theme';
-  function apply(t){html.setAttribute('data-theme',t);localStorage.setItem(KEY,t)}
-  const saved=localStorage.getItem(KEY);if(saved)apply(saved);
-  btn.addEventListener('click',()=>apply(html.getAttribute('data-theme')==='dark'?'light':'dark'));
+  try{
+    const html=document.documentElement,btn=document.getElementById('theme-toggle');
+    const KEY='madicken-theme';
+    function apply(t){html.setAttribute('data-theme',t);localStorage.setItem(KEY,t)}
+    const saved=localStorage.getItem(KEY);if(saved)apply(saved);
+    if(btn)btn.addEventListener('click',()=>apply(html.getAttribute('data-theme')==='dark'?'light':'dark'));
+  }catch(err){ console.warn('Theme toggle skipped:', err); }
 })();
 </script>
 </body>
