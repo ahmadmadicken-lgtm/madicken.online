@@ -816,7 +816,7 @@ footer{
   <div class="tb-right">
     <div class="tb-badge" id="tb-badge" aria-live="polite">
       <span class="tb-badge-dot"></span>
-      <span id="tb-badge-num">15</span> live
+      <span id="tb-badge-num">16</span> live
     </div>
     <button id="theme-toggle" aria-label="Toggle light/dark mode" title="Toggle theme">
       <span class="icon-sun">☀️</span>
@@ -877,7 +877,7 @@ footer{
   <div class="grid-toolbar">
     <div class="toolbar-left">
       <span class="toolbar-title">All destinations</span>
-      <span class="toolbar-count" id="grid-count" aria-live="polite">15</span>
+      <span class="toolbar-count" id="grid-count" aria-live="polite">16</span>
     </div>
     <div class="grid-filter-bar" role="search">
       <span class="filter-icon" aria-hidden="true">
@@ -993,6 +993,13 @@ footer{
       <div class="card-desc">A clean, private space for daily journaling and reflection.</div>
       <div class="card-footer"><span class="card-tag tag-system">System</span><span class="card-open">Open <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3v7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
     </a>
+    <a class="app-card" href="https://ahmadmadicken-lgtm.github.io/Nusantara-Lingua/" target="_blank" rel="noopener noreferrer" data-name="Nusantara Lingua" data-tag="website" role="listitem">
+      <span class="card-pip live"></span>
+      <div class="card-icon-wrap">🗣️</div>
+      <div class="card-name">Nusantara Lingua</div>
+      <div class="card-desc">Explore and learn the languages and dialects of the Indonesian archipelago.</div>
+      <div class="card-footer"><span class="card-tag tag-website">Platform</span><span class="card-open">Open <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3v7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+    </a>
 
     <div id="no-results" role="status" aria-live="polite">
       <div class="nr-glyph">🔭</div>
@@ -1098,7 +1105,7 @@ footer{
 /* ══════════════════════════════════════════════
    2-RING ORBIT SYSTEM
    Inner ring: 6 nodes   (indices 0–5)
-   Outer ring: 9 nodes   (indices 6–14)
+   Outer ring: 10 nodes  (indices 6–15)
 ══════════════════════════════════════════════ */
 ;(function(){
   const APPS = [
@@ -1109,7 +1116,7 @@ footer{
     {name:'Tax Consultant',           icon:'📋', tag:'website', pip:'',     url:'https://konsultasipajakgratis.com/'},
     {name:'Google Ads Academy',       icon:'🎯', tag:'academy', pip:'warm', url:'https://ahmadmadicken-lgtm.github.io/Google-Ads-Academy/'},
     {name:'Math Fanie',               icon:'➗', tag:'website', pip:'live', url:'https://ahmadmadicken-lgtm.github.io/Math_Panie/'},
-    // ── Outer ring (9) ──
+    // ── Outer ring (10) ──
     {name:'Math Atta',                icon:'🔢', tag:'website', pip:'live', url:'https://ahmadmadicken-lgtm.github.io/Belajar-MTK-Atta/'},
     {name:'Tax Academy',              icon:'🏛️', tag:'academy', pip:'warm', url:'https://ahmadmadicken-lgtm.github.io/Tax-Repository/'},
     {name:'Genset Academy',           icon:'🔋', tag:'academy', pip:'',     url:'https://gensetmasterclass.online/'},
@@ -1119,10 +1126,11 @@ footer{
     {name:'Financial Bubu',           icon:'💰', tag:'system',  pip:'live', url:'https://financial-os-ade.netlify.app/'},
     {name:'Laporan Keuangan',         icon:'📊', tag:'system',  pip:'',     url:'https://ahmadmadicken-lgtm.github.io/LapKeu/'},
     {name:'Modern Diary',             icon:'📔', tag:'system',  pip:'live', url:'https://ahmadmadicken-lgtm.github.io/ModernDiary/'},
+    {name:'Nusantara Lingua',         icon:'🗣️', tag:'website', pip:'live', url:'https://ahmadmadicken-lgtm.github.io/Nusantara-Lingua/'},
   ];
 
   const INNER_COUNT = 6;
-  const OUTER_COUNT = 9;
+  const OUTER_COUNT = 10;
   // Radii as fraction of stage size (0–1), measured from center
   const R_INNER = 0.28;
   const R_OUTER = 0.44;
